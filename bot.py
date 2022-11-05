@@ -3,19 +3,10 @@
 Created on Wed Sep 14 17:10:51 2022
 
 TODO: I think Dabo is done - pending feedback from Night Shift.
-- Need to either figure out Mee6 integration for currency OR add custom
-shop etc.
-- Try out personal_inventory = {user: [items]} and treasury management for items
-and latinum to use our own bot instead of Mee6
 - Ask Night Shift about item expiration dates, maybe?
-- Add background tasks for saving treasury, self_inventory every n minutes
+- Add background tasks for saving treasury, self_inventory every n minutes (DONE)
 -- Alternatively, just save after every round of Dabo / every purchase / every interaction?
 - Consider making $my-inventory and $balance DM replies?
-
-- Do another sweep of this and backroom to look for errors that will arise with
-an ID that doesn't exist in the dictionaries yet.
-
-- Fix $buy not playing well with other functions adding users to treasury dictionary
 
 - Remember that there is a chance a user doesn't have a nickname, probably need
 to modify functions to TRY to use nickname, otherwise just str(Member)
@@ -36,7 +27,8 @@ from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import asyncio
 import random
-import pickle 
+import pickle
+import datetime
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -81,11 +73,13 @@ async def on_ready():
                                   name='Faith of the Heart'))
     print(f'{bot.user.name} has connected to Discord!')
 
-@tasks.loop(seconds=30)
+@tasks.loop(minutes=10)
 async def save_data():
     data_to_save = (treasury, shop_inventory, self_inventory)
     with open('data.pickle', 'wb') as file:
         pickle.dump(data_to_save, file)
+    print('Data saved at ' + str(datetime.datetime.now()))
+    print(treasury)
 
 #%% Administrator Functions
 
@@ -238,7 +232,7 @@ async def dabo(ctx):
         intro.add_field(
             name = 'Rules of the Game', value = 'Your wager must be ' +
             'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
-            ' ' +latinum ' to enter the game.\n' + 
+            ' ' +latinum + ' to enter the game.\n' + 
             'Everyone wins or loses together, so ask the Blessed ' +
             'Exchequer for good luck!', inline = False)
         intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
@@ -329,7 +323,7 @@ async def check_balance(ctx):
     balance = treasury[user_id]
     user = ctx.author.nick
     message = (user + ', your current balance is: ' + str(balance) + 
-               ' ' + latinum '.')
+               ' ' + latinum + '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
     await ctx.send(embed=response)
 
@@ -367,7 +361,7 @@ async def my_inventory(ctx):
         message = discord.Embed(title = buyer + '\'s Inventory',
                                description = 'You do not have any items yet.' +
                                'Use the command $buy "Item Name" to start spending ' +
-                               'your ' + latinum '.')
+                               'your ' + latinum + '.')
     await ctx.send(embed=message)
 
 @bot.command(name='buy')
