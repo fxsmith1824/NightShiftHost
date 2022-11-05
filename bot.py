@@ -32,7 +32,7 @@ nest_asyncio.apply()
 
 import os
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import asyncio
 import random
@@ -75,10 +75,17 @@ def save_data():
 
 @bot.event
 async def on_ready():
+    save_data.start()
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.listening,
                                   name='Faith of the Heart'))
     print(f'{bot.user.name} has connected to Discord!')
+
+@tasks.loop(seconds=30)
+async def save_data():
+    data_to_save = (treasury, shop_inventory, self_inventory)
+    with open('data.pickle', 'wb') as file:
+        pickle.dump(data_to_save, file)
 
 #%% Administrator Functions
 
