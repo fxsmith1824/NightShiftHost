@@ -17,6 +17,9 @@ an ID that doesn't exist in the dictionaries yet.
 
 - Fix $buy not playing well with other functions adding users to treasury dictionary
 
+- Remember that there is a chance a user doesn't have a nickname, probably need
+to modify functions to TRY to use nickname, otherwise just str(Member)
+
 THIS IS AN ATTEMPT TO MERGE bot.py and backroom.py
 
 @author: AzureRogue
@@ -46,6 +49,7 @@ wagers = {}
 treasury = {}
 shop_inventory = {}
 self_inventory = {}
+latinum = '<:mee6Coins:1017715720961925150>'
 
 def load_data():
     try:
@@ -75,6 +79,24 @@ async def on_ready():
         activity=discord.Activity(type=discord.ActivityType.listening,
                                   name='Faith of the Heart'))
     print(f'{bot.user.name} has connected to Discord!')
+
+#%% Administrator Functions
+
+@bot.command(name='modify-latinum')
+async def modify_latinum(ctx, member: discord.Member, amount: int):
+    roles = [str(role) for role in ctx.author.roles]
+    if 'Night Shift' in roles:
+        author = ctx.author.nick
+        member_id = member.id
+        member_nick = member.nick
+        if member_id not in treasury.keys():
+            treasury[member_id] = amount
+        else:
+            treasury[member_id] += amount
+        message = discord.Embed(description = author + ' has given ' + member_nick +
+                                ' ' + str(amount) + ' <:mee6Coins:1017715720961925150>',
+                                color = discord.Color.dark_gold())
+        await ctx.send(embed=message)
 
 #%% Dabo
 
@@ -196,58 +218,60 @@ def resultImages(result):
 async def dabo(ctx):
     global dabo
     global wagers
-    intro = discord.Embed(
-        title = 'Play Some Dabo!',
-        description = 'A game of Dabo is about to begin...',
-        color = discord.Color.blue())
-    intro.add_field(
-        name = 'How to Play', value = 'Use the command \"$Wager ' +
-        '<integer>\" to bid <integer> <:mee6Coins:1017715720961925150> ' +
-        'gold pressed latinum on the next spin!', inline = False)
-    intro.add_field(
-        name = 'Rules of the Game', value = 'Your wager must be ' +
-        'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
-        ' <:mee6Coins:1017715720961925150> to enter the game.\n' + 
-        'Everyone wins or loses together, so ask the Blessed ' +
-        'Exchequer for good luck!', inline = False)
-    intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
-                     ' seconds.')
-    dabo = True
-    await ctx.send(embed=intro)
-    await asyncio.sleep(dabo_duration)
-    closed = discord.Embed(
-        description = 'Betting is now closed! Play again next time!',
-        color = discord.Color.red())
-    dabo = False
-    await ctx.send(embed=closed)
-    collectWagers(wagers)
-    result = spinWheel()
-    delay = discord.Embed(
-        description = 'Collecting wagers and spinning the wheel!',
-        color = discord.Color.dark_gray())
-    await ctx.send(embed=delay)
-    message, payout = determineWinnings(result)
-    await asyncio.sleep(random.randint(4,6))
-    wheel1, wheel2, wheel3 = resultImages(result)
-    await ctx.send(file = discord.File(wheel1))
-    await asyncio.sleep(random.randint(2,4))
-    await ctx.send(file = discord.File(wheel2))
-    await asyncio.sleep(random.randint(5,7))
-    await ctx.send(file = discord.File(wheel3))
-    await asyncio.sleep(1)
-    if payout > 1:
-        pay_color = discord.Color.gold()
-    elif payout > 0:
-        pay_color = discord.Color.light_grey()
-    else:
-        pay_color = discord.Color.dark_red()
-    result = discord.Embed(title = message, color = pay_color,
-                           description = 'The payout for this round is ' + 
-                           str(payout) + 'x your wagers.')
-    result.set_footer(text = 'Thank you for playing!')
-    await ctx.send(embed=result)
-    payWinners(payout, wagers)
-    wagers = {}
+    roles = [str(role) for role in ctx.author.roles]
+    if 'Night Shift' in roles:
+        intro = discord.Embed(
+            title = 'Play Some Dabo!',
+            description = 'A game of Dabo is about to begin...',
+            color = discord.Color.blue())
+        intro.add_field(
+            name = 'How to Play', value = 'Use the command \"$Wager ' +
+            '<integer>\" to bid <integer> <:mee6Coins:1017715720961925150> ' +
+            'gold pressed latinum on the next spin!', inline = False)
+        intro.add_field(
+            name = 'Rules of the Game', value = 'Your wager must be ' +
+            'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
+            ' <:mee6Coins:1017715720961925150> to enter the game.\n' + 
+            'Everyone wins or loses together, so ask the Blessed ' +
+            'Exchequer for good luck!', inline = False)
+        intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
+                         ' seconds.')
+        dabo = True
+        await ctx.send(embed=intro)
+        await asyncio.sleep(dabo_duration)
+        closed = discord.Embed(
+            description = 'Betting is now closed! Play again next time!',
+            color = discord.Color.red())
+        dabo = False
+        await ctx.send(embed=closed)
+        collectWagers(wagers)
+        result = spinWheel()
+        delay = discord.Embed(
+            description = 'Collecting wagers and spinning the wheel!',
+            color = discord.Color.dark_gray())
+        await ctx.send(embed=delay)
+        message, payout = determineWinnings(result)
+        await asyncio.sleep(random.randint(4,6))
+        wheel1, wheel2, wheel3 = resultImages(result)
+        await ctx.send(file = discord.File(wheel1))
+        await asyncio.sleep(random.randint(2,4))
+        await ctx.send(file = discord.File(wheel2))
+        await asyncio.sleep(random.randint(5,7))
+        await ctx.send(file = discord.File(wheel3))
+        await asyncio.sleep(1)
+        if payout > 1:
+            pay_color = discord.Color.gold()
+        elif payout > 0:
+            pay_color = discord.Color.light_grey()
+        else:
+            pay_color = discord.Color.dark_red()
+        result = discord.Embed(title = message, color = pay_color,
+                               description = 'The payout for this round is ' + 
+                               str(payout) + 'x your wagers.')
+        result.set_footer(text = 'Thank you for playing!')
+        await ctx.send(embed=result)
+        payWinners(payout, wagers)
+        wagers = {}
 
 @bot.command(name='wager')
 async def wager(ctx, wager: int):
@@ -319,6 +343,7 @@ async def inventory(ctx):
 
 @bot.command(name='my-inventory')
 async def my_inventory(ctx):
+    global self_inventory
     buyer = ctx.author.nick
     buyer_id = ctx.author.id
     buy_color = discord.Color.light_grey()
