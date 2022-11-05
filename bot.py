@@ -94,7 +94,7 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
         else:
             treasury[member_id] += amount
         message = discord.Embed(description = author + ' has given ' + member_nick +
-                                ' ' + str(amount) + ' <:mee6Coins:1017715720961925150>',
+                                ' ' + str(amount) + ' ' + latinum,
                                 color = discord.Color.dark_gold())
         await ctx.send(embed=message)
 
@@ -226,12 +226,12 @@ async def dabo(ctx):
             color = discord.Color.blue())
         intro.add_field(
             name = 'How to Play', value = 'Use the command \"$Wager ' +
-            '<integer>\" to bid <integer> <:mee6Coins:1017715720961925150> ' +
-            'gold pressed latinum on the next spin!', inline = False)
+            '<integer>\" to bid <integer> ' + latinum +
+            ' gold pressed latinum on the next spin!', inline = False)
         intro.add_field(
             name = 'Rules of the Game', value = 'Your wager must be ' +
             'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
-            ' <:mee6Coins:1017715720961925150> to enter the game.\n' + 
+            ' ' +latinum ' to enter the game.\n' + 
             'Everyone wins or loses together, so ask the Blessed ' +
             'Exchequer for good luck!', inline = False)
         intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
@@ -282,7 +282,7 @@ async def wager(ctx, wager: int):
             if verifyWager(ctx.author.id, wager):
                 wagers[ctx.author.id] = wager
                 message = (user + ', you wagered ' + str(wager) + 
-                           ' <:mee6Coins:1017715720961925150> latinum. Good luck!')
+                           ' ' + latinum + ' latinum. Good luck!')
                 result_color = discord.Color.blue()
             else:
                 message = ('Sorry, ' + user + 
@@ -322,7 +322,7 @@ async def check_balance(ctx):
     balance = treasury[user_id]
     user = ctx.author.nick
     message = (user + ', your current balance is: ' + str(balance) + 
-               ' <:mee6Coins:1017715720961925150>.')
+               ' ' + latinum '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
     await ctx.send(embed=response)
 
@@ -335,7 +335,7 @@ async def inventory(ctx):
                               '----------',
                               color = discord.Color.blue())
     for item in shop_inventory:
-        item_name = item + ': ' + str(shop_inventory[item]['price']) + ' <:mee6Coins:1017715720961925150>'
+        item_name = item + ': ' + str(shop_inventory[item]['price']) + ' ' + latinum
         item_description = shop_inventory[item]['description']
         message.add_field(name=item_name, value=item_description, inline=False)
     message.set_footer(text = 'Remember: all sales are final!')
@@ -360,7 +360,7 @@ async def my_inventory(ctx):
         message = discord.Embed(title = buyer + '\'s Inventory',
                                description = 'You do not have any items yet.' +
                                'Use the command $buy "Item Name" to start spending ' +
-                               'your <:mee6Coins:1017715720961925150>.')
+                               'your ' + latinum '.')
     await ctx.send(embed=message)
 
 @bot.command(name='buy')
@@ -375,7 +375,7 @@ async def buy_item(ctx, item):
             buy_message = buyer + ' has purchased ' + item + '.'
             disburseItem(buyer_id, item)
         else:
-            buy_message = ('Sorry, ' + buyer + ', you do not have enough <:mee6Coins:1017715720961925150>' +
+            buy_message = ('Sorry, ' + buyer + ', you do not have enough ' + latinum +
                            ' to make this purchase.')            
         message = discord.Embed(description = buy_message, color = buy_color)
         await ctx.send(embed=message)
