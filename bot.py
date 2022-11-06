@@ -11,8 +11,6 @@ TODO: I think Dabo is done - pending feedback from Night Shift.
 - Remember that there is a chance a user doesn't have a nickname, probably need
 to modify functions to TRY to use nickname, otherwise just str(Member)
 
-THIS IS AN ATTEMPT TO MERGE bot.py and backroom.py
-
 @author: AzureRogue
 """
 
@@ -98,6 +96,12 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
                                 ' ' + str(amount) + ' ' + latinum,
                                 color = discord.Color.dark_gold())
         await ctx.send(embed=message)
+
+@bot.command(name='save-data')
+async def on_demand_save(ctx):
+    roles = [str(role) for role in ctx.author.roles]
+    if 'Night Shift' in roles:
+        save_data()
 
 #%% Dabo
 
