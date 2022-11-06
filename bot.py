@@ -105,7 +105,7 @@ async def remove_item(ctx, member: discord.Member, item):
             message = discord.Embed(description = 'Could not remove ' + item + 
                                     ' from ' + member.nick + '.',
                                     color = discord.Color.light_grey())
-    await ctx.send(embed=message)
+        await ctx.send(embed=message)
 
 @bot.command(name='clear-inventory')
 async def clear_inventory(ctx, member: discord.Member):
