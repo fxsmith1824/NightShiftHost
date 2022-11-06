@@ -101,7 +101,7 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
 async def on_demand_save(ctx):
     roles = [str(role) for role in ctx.author.roles]
     if 'Night Shift' in roles:
-        save_data()
+        await save_data()
 
 #%% Dabo
 
