@@ -96,11 +96,27 @@ async def remove_item(ctx, member: discord.Member, item):
     roles = [str(role) for role in ctx.author.roles]
     if 'Night Shift' in roles:
         author = ctx.author.nick
-        self_inventory[member.id].remove(item)
-    message = discord.Embed(description = author + ' has removed ' + item + 
-                            ' from ' + member.nick + '.',
-                            color = discord.Color.light_grey())
+        try:
+            self_inventory[member.id].remove(item)
+            message = discord.Embed(description = author + ' has removed ' + item + 
+                                    ' from ' + member.nick + '.',
+                                    color = discord.Color.light_grey())
+        except:
+            message = discord.Embed(description = 'Could not remove ' + item + 
+                                    ' from ' + member.nick + '.',
+                                    color = discord.Color.light_grey())
     await ctx.send(embed=message)
+
+@bot.command(name='clear-inventory')
+async def clear_inventory(ctx, member: discord.Member):
+    roles = [str(role) for role in ctx.author.roles]
+    if 'Night Shift' in roles:
+        author = ctx.author.nick
+        self_inventory[member.id] = []
+        message = discord.Embed(description = author + ' has cleared ' + member.nick +
+                                '\'s inventory.',
+                                color = discord.Color.light_grey())
+        await ctx.send(embed=message)
 
 @bot.command(name='save-data')
 async def on_demand_save(ctx):
