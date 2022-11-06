@@ -91,6 +91,17 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
                                 color = discord.Color.dark_gold())
         await ctx.send(embed=message)
 
+@bot.command(name='remove-item')
+async def remove_item(ctx, member: discord.Member, item):
+    roles = [str(role) for role in ctx.author.roles]
+    if 'Night Shift' in roles:
+        author = ctx.author.nick
+        self_inventory[member.id].remove(item)
+    message = discord.Embed(description = author + ' has removed ' + item + 
+                            ' from ' + member.nick + '.',
+                            color = discord.Color.light_grey())
+    await ctx.send(embed=message)
+
 @bot.command(name='save-data')
 async def on_demand_save(ctx):
     roles = [str(role) for role in ctx.author.roles]
