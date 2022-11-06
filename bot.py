@@ -57,12 +57,6 @@ def load_data():
         print('Data failed to load - loading default test data.')
     return treasury, shop_inventory, self_inventory
 
-def save_data():
-    data_to_save = (treasury, shop_inventory, self_inventory)
-    with open('data.pickle', 'wb') as file:
-        pickle.dump(data_to_save, file)
-
-
 @bot.event
 async def on_ready():
     save_data.start()
