@@ -10,6 +10,7 @@ TODO: I think Dabo is done - pending feedback from Night Shift.
 
 - Remember that there is a chance a user doesn't have a nickname, probably need
 to modify functions to TRY to use nickname, otherwise just str(Member)
+-- This should be updated, need to test.
 
 @author: AzureRogue
 """
@@ -79,9 +80,15 @@ async def save_data():
 async def modify_latinum(ctx, member: discord.Member, amount: int):
     roles = [str(role) for role in ctx.author.roles]
     if 'Night Shift' in roles:
-        author = ctx.author.nick
+        if ctx.author.nick:
+            author = ctx.author.nick
+        else:
+            author = str(ctx.author)
         member_id = member.id
-        member_nick = member.nick
+        if member.nick:
+            member_nick = member.nick
+        else:
+            member_nick = str(member)
         if member_id not in treasury.keys():
             treasury[member_id] = amount
         else:
@@ -95,7 +102,10 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
 async def remove_item(ctx, member: discord.Member, item):
     roles = [str(role) for role in ctx.author.roles]
     if 'Night Shift' in roles:
-        author = ctx.author.nick
+        if ctx.author.nick:
+            author = ctx.author.nick
+        else:
+            author = str(ctx.author)
         try:
             self_inventory[member.id].remove(item)
             message = discord.Embed(description = author + ' has removed ' + item + 
@@ -111,9 +121,16 @@ async def remove_item(ctx, member: discord.Member, item):
 async def clear_inventory(ctx, member: discord.Member):
     roles = [str(role) for role in ctx.author.roles]
     if 'Night Shift' in roles:
-        author = ctx.author.nick
+        if ctx.author.nick:
+            author = ctx.author.nick
+        else:
+            author = str(ctx.author)
+        if member.nick:
+            member_name = member.nick
+        else:
+            member_name = str(member)
         self_inventory[member.id] = []
-        message = discord.Embed(description = author + ' has cleared ' + member.nick +
+        message = discord.Embed(description = author + ' has cleared ' + member_name +
                                 '\'s inventory.',
                                 color = discord.Color.light_grey())
         await ctx.send(embed=message)
@@ -303,7 +320,10 @@ async def dabo(ctx):
 async def wager(ctx, wager: int):
     global wagers
     if dabo == True:
-        user = ctx.author.nick
+        if ctx.author.nick:
+            user = ctx.author.nick
+        else:
+            user = str(ctx.author)
         if dabo_min <= wager <= dabo_max:
             if verifyWager(ctx.author.id, wager):
                 wagers[ctx.author.id] = wager
@@ -346,7 +366,10 @@ async def check_balance(ctx):
     if user_id not in treasury.keys():
         treasury[user_id] = 0
     balance = treasury[user_id]
-    user = ctx.author.nick
+    if ctx.author.nick:
+        user = ctx.author.nick
+    else:
+        user = str(ctx.author)
     message = (user + ', your current balance is: ' + str(balance) + 
                ' ' + latinum + '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
@@ -370,7 +393,10 @@ async def inventory(ctx):
 @bot.command(name='my-inventory')
 async def my_inventory(ctx):
     global self_inventory
-    buyer = ctx.author.nick
+    if ctx.author.nick:
+        buyer = ctx.author.nick
+    else:
+        buyer = str(ctx.author)
     buyer_id = ctx.author.id
     buy_color = discord.Color.light_grey()
     if buyer_id in self_inventory.keys():
@@ -392,7 +418,10 @@ async def my_inventory(ctx):
 @bot.command(name='buy')
 async def buy_item(ctx, item):
     if item in shop_inventory:
-        buyer = ctx.author.nick
+        if ctx.author.nick:
+            buyer = ctx.author.nick
+        else:
+            buyer = str(ctx.author)
         buyer_id = ctx.author.id
         buy_color = discord.Color.light_grey()
         if buyer_id not in treasury.keys():
