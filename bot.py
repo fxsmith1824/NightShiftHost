@@ -399,20 +399,23 @@ async def my_inventory(ctx):
         buyer = str(ctx.author)
     buyer_id = ctx.author.id
     buy_color = discord.Color.light_grey()
-    if buyer_id in self_inventory.keys():
-        message = discord.Embed(title = buyer + '\'s Inventory',
-                                description = 'Here are your currently owned items. ' +
-                                'Use some command Azure has not created yet to use your '+ 
-                                'items.', color = buy_color)
-        for item in self_inventory[buyer_id]:
-            item_name = item
-            item_description = shop_inventory[item]['description']
-            message.add_field(name=item_name, value=item_description, inline=False)
+    if buyer_id not in self_inventory.keys():
+        self_inventory[buyer_id] = []
     else:
-        message = discord.Embed(title = buyer + '\'s Inventory',
-                               description = 'You do not have any items yet.' +
-                               'Use the command $buy "Item Name" to start spending ' +
-                               'your ' + latinum + '.')
+        if len(self_inventory[buyer_id]) > 0:
+            message = discord.Embed(title = buyer + '\'s Inventory',
+                                    description = 'Here are your currently owned items. ' +
+                                    'Use some command Azure has not created yet to use your '+ 
+                                    'items.', color = buy_color)
+            for item in self_inventory[buyer_id]:
+                item_name = item
+                item_description = shop_inventory[item]['description']
+                message.add_field(name=item_name, value=item_description, inline=False)
+        else:
+            message = discord.Embed(title = buyer + '\'s Inventory',
+                                   description = 'You do not have any items yet.' +
+                                   'Use the command $buy "Item Name" to start spending ' +
+                                   'your ' + latinum + '.')
     await ctx.send(embed=message)
 
 @bot.command(name='buy')
