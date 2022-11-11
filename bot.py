@@ -53,6 +53,7 @@ shop_inventory = {}
 self_inventory = {}
 
 latinum = '<:mee6Coins:1017715720961925150>'
+starting_balance = 500
 
 def load_data():
     try:
@@ -100,10 +101,8 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
         member_nick = member.nick
     else:
         member_nick = str(member)
-    if member_id not in treasury.keys():
-        treasury[member_id] = amount
-    else:
-        treasury[member_id] += amount
+    make_treasury_account(member_id)
+    treasury[member_id] += amount
     message = discord.Embed(description = author + ' has given ' + member_nick +
                             ' ' + str(amount) + ' ' + latinum,
                             color = discord.Color.dark_gold())
@@ -355,6 +354,14 @@ async def wager(ctx, wager: int):
 
 #%% Latinum and Item Management
 
+def make_treasury_account(user_id):
+    if user_id not in treasury.keys():
+        treasury[user_id] = starting_balance
+
+def make_item_inventory(user_id):
+    if user_id not in self_inventory.keys():
+        self_inventory[user_id] = []
+
 def collectPayment(buyer_id, item):
     if treasury[buyer_id] >= shop_inventory[item]['price']:
         treasury[buyer_id] -= shop_inventory[item]['price']
@@ -363,16 +370,16 @@ def collectPayment(buyer_id, item):
         return False
 
 def disburseItem(buyer_id, item):
-    if buyer_id in self_inventory.keys():
-        self_inventory[buyer_id].append(item)
-    else:
-        self_inventory[buyer_id] = [item]
+    make_item_inventory(buyer_id)
+    self_inventory[buyer_id].append(item)
 
 @bot.command(name='balance')
-async def check_balance(ctx):
-    user_id = ctx.author.id
-    if user_id not in treasury.keys():
-        treasury[user_id] = 0
+async def check_balance(ctx, member: discord.Member = None):
+    if member:
+        user_id = member.id
+    else:
+        user_id = ctx.author.id
+    make_treasury_account(user_id)
     balance = treasury[user_id]
     if ctx.author.nick:
         user = ctx.author.nick
@@ -407,23 +414,21 @@ async def my_inventory(ctx):
         buyer = str(ctx.author)
     buyer_id = ctx.author.id
     buy_color = discord.Color.light_grey()
-    if buyer_id not in self_inventory.keys():
-        self_inventory[buyer_id] = []
+    make_item_inventory(buyer_id)
+    if len(self_inventory[buyer_id]) > 0:
+        message = discord.Embed(title = buyer + '\'s Inventory',
+                                description = 'Here are your currently owned items. ' +
+                                'Use some command Azure has not created yet to use your '+ 
+                                'items.', color = buy_color)
+        for item in self_inventory[buyer_id]:
+            item_name = item
+            item_description = shop_inventory[item]['description']
+            message.add_field(name=item_name, value=item_description, inline=False)
     else:
-        if len(self_inventory[buyer_id]) > 0:
-            message = discord.Embed(title = buyer + '\'s Inventory',
-                                    description = 'Here are your currently owned items. ' +
-                                    'Use some command Azure has not created yet to use your '+ 
-                                    'items.', color = buy_color)
-            for item in self_inventory[buyer_id]:
-                item_name = item
-                item_description = shop_inventory[item]['description']
-                message.add_field(name=item_name, value=item_description, inline=False)
-        else:
-            message = discord.Embed(title = buyer + '\'s Inventory',
-                                   description = 'You do not have any items yet. ' +
-                                   'Use the command $buy "Item Name" to start spending ' +
-                                   'your ' + latinum + '.')
+        message = discord.Embed(title = buyer + '\'s Inventory',
+                               description = 'You do not have any items yet. ' +
+                               'Use the command $buy "Item Name" to start spending ' +
+                               'your ' + latinum + '.')
     await ctx.send(embed=message)
 
 @bot.command(name='buy')
@@ -435,8 +440,7 @@ async def buy_item(ctx, item):
             buyer = str(ctx.author)
         buyer_id = ctx.author.id
         buy_color = discord.Color.light_grey()
-        if buyer_id not in treasury.keys():
-            treasury[buyer_id] = 0
+        make_treasury_account(buyer_id)
         if collectPayment(buyer_id, item):
             buy_message = buyer + ' has purchased ' + item + '.'
             disburseItem(buyer_id, item)
@@ -455,8 +459,7 @@ async def stipend(ctx):
         user = str(ctx.author)
     user_id = ctx.author.id
     roles = [str(role) for role in ctx.author.roles]
-    if user_id not in treasury.keys():
-        treasury[user_id] = 0
+    make_treasury_account(user_id)
     base_payout = 100
     if 'Commander' in roles:
         payout = base_payout + 25
