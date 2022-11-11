@@ -421,7 +421,7 @@ async def my_inventory(ctx):
                 message.add_field(name=item_name, value=item_description, inline=False)
         else:
             message = discord.Embed(title = buyer + '\'s Inventory',
-                                   description = 'You do not have any items yet.' +
+                                   description = 'You do not have any items yet. ' +
                                    'Use the command $buy "Item Name" to start spending ' +
                                    'your ' + latinum + '.')
     await ctx.send(embed=message)
