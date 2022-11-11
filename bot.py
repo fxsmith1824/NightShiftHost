@@ -4,13 +4,14 @@ Created on Wed Sep 14 17:10:51 2022
 
 TODO: I think Dabo is done - pending feedback from Night Shift.
 - Ask Night Shift about item expiration dates, maybe?
-- Add background tasks for saving treasury, self_inventory every n minutes (DONE)
--- Alternatively, just save after every round of Dabo / every purchase / every interaction?
 - Consider making $my-inventory and $balance DM replies?
 
-- Remember that there is a chance a user doesn't have a nickname, probably need
-to modify functions to TRY to use nickname, otherwise just str(Member)
--- This should be updated, need to test.
+- Maybe replace all the nickname / member name checks with a simple function
+def try_nick(user):
+    if user.nick:
+        return user.nick
+    else:
+        return user.name
 
 Should make sure only channel accepted for commands is #dabo-tables
 1019777894941212763
@@ -19,8 +20,6 @@ async def is_channel(ctx):
     return ctx.channel.id == 1019777894941212763
 
 @commands.check(is_channel)
-
-daily command is gonna be $stipend - scale up based on rank
 
 @author: AzureRogue
 """
@@ -91,6 +90,7 @@ async def save_data():
 
 @bot.command(name='modify-latinum')
 @commands.has_role(admin_role)
+@commands.guild_only()
 async def modify_latinum(ctx, member: discord.Member, amount: int):
     if ctx.author.nick:
         author = ctx.author.nick
@@ -110,6 +110,7 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
 
 @bot.command(name='remove-item')
 @commands.has_role(admin_role)
+@commands.guild_only()
 async def remove_item(ctx, member: discord.Member, item):
     if ctx.author.nick:
         author = ctx.author.nick
@@ -128,6 +129,7 @@ async def remove_item(ctx, member: discord.Member, item):
 
 @bot.command(name='clear-inventory')
 @commands.has_role(admin_role)
+@commands.guild_only()
 async def clear_inventory(ctx, member: discord.Member):
     if ctx.author.nick:
         author = ctx.author.nick
@@ -145,6 +147,7 @@ async def clear_inventory(ctx, member: discord.Member):
 
 @bot.command(name='save-data')
 @commands.has_role(admin_role)
+@commands.guild_only()
 async def on_demand_save(ctx):
     await save_data()
 
@@ -267,6 +270,7 @@ def resultImages(result):
 
 @bot.command(name='dabo')
 @commands.has_any_role('Night Shift', 'Commander')
+@commands.guild_only()
 async def dabo(ctx):
     global dabo
     global wagers
@@ -324,6 +328,7 @@ async def dabo(ctx):
     wagers = {}
 
 @bot.command(name='wager')
+@commands.guild_only()
 async def wager(ctx, wager: int):
     global wagers
     if dabo == True:
@@ -395,6 +400,7 @@ async def check_balance(ctx, member: discord.Member = None):
     await ctx.send(embed=response)
 
 @bot.command(name='shop-inventory')
+@commands.guild_only()
 async def inventory(ctx):
     message = discord.Embed(title = 'Shop Inventory',
                               description = 'Check out the amazing offerings below, ' +
@@ -436,6 +442,7 @@ async def my_inventory(ctx):
     await ctx.send(embed=message)
 
 @bot.command(name='buy')
+@commands.guild_only()
 async def buy_item(ctx, item):
     if item in shop_inventory:
         if ctx.author.nick:
@@ -456,6 +463,7 @@ async def buy_item(ctx, item):
     
 @bot.command(name='stipend')
 @commands.cooldown(1, 60*60*24, type = commands.BucketType.member)
+@commands.guild_only()
 async def stipend(ctx):
     if ctx.author.nick:
         user = ctx.author.nick
