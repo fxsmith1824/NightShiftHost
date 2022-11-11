@@ -52,7 +52,6 @@ treasury = {}
 shop_inventory = {}
 self_inventory = {}
 
-
 latinum = '<:mee6Coins:1017715720961925150>'
 
 def load_data():
@@ -92,8 +91,6 @@ async def save_data():
 @bot.command(name='modify-latinum')
 @commands.has_role(admin_role)
 async def modify_latinum(ctx, member: discord.Member, amount: int):
-#    roles = [str(role) for role in ctx.author.roles]
-#    if 'Night Shift' in roles:
     if ctx.author.nick:
         author = ctx.author.nick
     else:
@@ -115,8 +112,6 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
 @bot.command(name='remove-item')
 @commands.has_role(admin_role)
 async def remove_item(ctx, member: discord.Member, item):
-#    roles = [str(role) for role in ctx.author.roles]
-#    if 'Night Shift' in roles:
     if ctx.author.nick:
         author = ctx.author.nick
     else:
@@ -135,8 +130,6 @@ async def remove_item(ctx, member: discord.Member, item):
 @bot.command(name='clear-inventory')
 @commands.has_role(admin_role)
 async def clear_inventory(ctx, member: discord.Member):
-#    roles = [str(role) for role in ctx.author.roles]
-#    if 'Night Shift' in roles:
     if ctx.author.nick:
         author = ctx.author.nick
     else:
@@ -154,8 +147,6 @@ async def clear_inventory(ctx, member: discord.Member):
 @bot.command(name='save-data')
 @commands.has_role(admin_role)
 async def on_demand_save(ctx):
-#    roles = [str(role) for role in ctx.author.roles]
-#    if 'Night Shift' in roles:
     await save_data()
 
 #%% Dabo
@@ -248,8 +239,9 @@ def verifyWager(userID, wager):
             return True
         else:
             return False
-    # PROBABLY NEED ANOTHER LINE HERE FOR WHAT TO RETURN IF userID DOESN'T EXIST
-    # YET
+    else:
+        treasury[userID] = 0
+        return False
 
 def collectWagers(wagers):
     for wager in wagers:
@@ -279,8 +271,6 @@ def resultImages(result):
 async def dabo(ctx):
     global dabo
     global wagers
-#    roles = [str(role) for role in ctx.author.roles]
-#    if 'Night Shift' in roles:
     intro = discord.Embed(
         title = 'Play Some Dabo!',
         description = 'A game of Dabo is about to begin...',
