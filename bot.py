@@ -12,6 +12,16 @@ TODO: I think Dabo is done - pending feedback from Night Shift.
 to modify functions to TRY to use nickname, otherwise just str(Member)
 -- This should be updated, need to test.
 
+Should make sure only channel accepted for commands is #dabo-tables
+1019777894941212763
+
+async def is_channel(ctx):   
+    return ctx.channel.id == 1019777894941212763
+
+@commands.check(is_channel)
+
+daily command is gonna be $stipend - scale up based on rank
+
 @author: AzureRogue
 """
 
@@ -34,12 +44,15 @@ token = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix='$', intents=intents)
+admin_role = 'Night Shift'
 
 dabo = False
 wagers = {}
 treasury = {}
 shop_inventory = {}
 self_inventory = {}
+
+
 latinum = '<:mee6Coins:1017715720961925150>'
 
 def load_data():
@@ -77,69 +90,73 @@ async def save_data():
 #%% Administrator Functions
 
 @bot.command(name='modify-latinum')
+@commands.has_role(admin_role)
 async def modify_latinum(ctx, member: discord.Member, amount: int):
-    roles = [str(role) for role in ctx.author.roles]
-    if 'Night Shift' in roles:
-        if ctx.author.nick:
-            author = ctx.author.nick
-        else:
-            author = str(ctx.author)
-        member_id = member.id
-        if member.nick:
-            member_nick = member.nick
-        else:
-            member_nick = str(member)
-        if member_id not in treasury.keys():
-            treasury[member_id] = amount
-        else:
-            treasury[member_id] += amount
-        message = discord.Embed(description = author + ' has given ' + member_nick +
-                                ' ' + str(amount) + ' ' + latinum,
-                                color = discord.Color.dark_gold())
-        await ctx.send(embed=message)
+#    roles = [str(role) for role in ctx.author.roles]
+#    if 'Night Shift' in roles:
+    if ctx.author.nick:
+        author = ctx.author.nick
+    else:
+        author = str(ctx.author)
+    member_id = member.id
+    if member.nick:
+        member_nick = member.nick
+    else:
+        member_nick = str(member)
+    if member_id not in treasury.keys():
+        treasury[member_id] = amount
+    else:
+        treasury[member_id] += amount
+    message = discord.Embed(description = author + ' has given ' + member_nick +
+                            ' ' + str(amount) + ' ' + latinum,
+                            color = discord.Color.dark_gold())
+    await ctx.send(embed=message)
 
 @bot.command(name='remove-item')
+@commands.has_role(admin_role)
 async def remove_item(ctx, member: discord.Member, item):
-    roles = [str(role) for role in ctx.author.roles]
-    if 'Night Shift' in roles:
-        if ctx.author.nick:
-            author = ctx.author.nick
-        else:
-            author = str(ctx.author)
-        try:
-            self_inventory[member.id].remove(item)
-            message = discord.Embed(description = author + ' has removed ' + item + 
-                                    ' from ' + member.nick + '.',
-                                    color = discord.Color.light_grey())
-        except:
-            message = discord.Embed(description = 'Could not remove ' + item + 
-                                    ' from ' + member.nick + '.',
-                                    color = discord.Color.light_grey())
-        await ctx.send(embed=message)
+#    roles = [str(role) for role in ctx.author.roles]
+#    if 'Night Shift' in roles:
+    if ctx.author.nick:
+        author = ctx.author.nick
+    else:
+        author = str(ctx.author)
+    try:
+        self_inventory[member.id].remove(item)
+        message = discord.Embed(description = author + ' has removed ' + item + 
+                                ' from ' + member.nick + '.',
+                                color = discord.Color.light_grey())
+    except:
+        message = discord.Embed(description = 'Could not remove ' + item + 
+                                ' from ' + member.nick + '.',
+                                color = discord.Color.light_grey())
+    await ctx.send(embed=message)
 
 @bot.command(name='clear-inventory')
+@commands.has_role(admin_role)
 async def clear_inventory(ctx, member: discord.Member):
-    roles = [str(role) for role in ctx.author.roles]
-    if 'Night Shift' in roles:
-        if ctx.author.nick:
-            author = ctx.author.nick
-        else:
-            author = str(ctx.author)
-        if member.nick:
-            member_name = member.nick
-        else:
-            member_name = str(member)
-        self_inventory[member.id] = []
-        message = discord.Embed(description = author + ' has cleared ' + member_name +
-                                '\'s inventory.',
-                                color = discord.Color.light_grey())
-        await ctx.send(embed=message)
+#    roles = [str(role) for role in ctx.author.roles]
+#    if 'Night Shift' in roles:
+    if ctx.author.nick:
+        author = ctx.author.nick
+    else:
+        author = str(ctx.author)
+    if member.nick:
+        member_name = member.nick
+    else:
+        member_name = str(member)
+    self_inventory[member.id] = []
+    message = discord.Embed(description = author + ' has cleared ' + member_name +
+                            '\'s inventory.',
+                            color = discord.Color.light_grey())
+    await ctx.send(embed=message)
 
 @bot.command(name='save-data')
+@commands.has_role(admin_role)
 async def on_demand_save(ctx):
-    roles = [str(role) for role in ctx.author.roles]
-    if 'Night Shift' in roles:
-        await save_data()
+#    roles = [str(role) for role in ctx.author.roles]
+#    if 'Night Shift' in roles:
+    await save_data()
 
 #%% Dabo
 
@@ -258,63 +275,64 @@ def resultImages(result):
     return wheel1_file, wheel2_file, wheel3_file
 
 @bot.command(name='dabo')
+@commands.has_any_role('Night Shift', 'Commander')
 async def dabo(ctx):
     global dabo
     global wagers
-    roles = [str(role) for role in ctx.author.roles]
-    if 'Night Shift' in roles:
-        intro = discord.Embed(
-            title = 'Play Some Dabo!',
-            description = 'A game of Dabo is about to begin...',
-            color = discord.Color.blue())
-        intro.add_field(
-            name = 'How to Play', value = 'Use the command \"$Wager ' +
-            '<integer>\" to bid <integer> ' + latinum +
-            ' gold pressed latinum on the next spin!', inline = False)
-        intro.add_field(
-            name = 'Rules of the Game', value = 'Your wager must be ' +
-            'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
-            ' ' +latinum + ' to enter the game.\n' + 
-            'Everyone wins or loses together, so ask the Blessed ' +
-            'Exchequer for good luck!', inline = False)
-        intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
-                         ' seconds.')
-        dabo = True
-        await ctx.send(embed=intro)
-        await asyncio.sleep(dabo_duration)
-        closed = discord.Embed(
-            description = 'Betting is now closed! Play again next time!',
-            color = discord.Color.red())
-        dabo = False
-        await ctx.send(embed=closed)
-        collectWagers(wagers)
-        result = spinWheel()
-        delay = discord.Embed(
-            description = 'Collecting wagers and spinning the wheel!',
-            color = discord.Color.dark_gray())
-        await ctx.send(embed=delay)
-        message, payout = determineWinnings(result)
-        await asyncio.sleep(random.randint(4,6))
-        wheel1, wheel2, wheel3 = resultImages(result)
-        await ctx.send(file = discord.File(wheel1))
-        await asyncio.sleep(random.randint(2,4))
-        await ctx.send(file = discord.File(wheel2))
-        await asyncio.sleep(random.randint(5,7))
-        await ctx.send(file = discord.File(wheel3))
-        await asyncio.sleep(1)
-        if payout > 1:
-            pay_color = discord.Color.gold()
-        elif payout > 0:
-            pay_color = discord.Color.light_grey()
-        else:
-            pay_color = discord.Color.dark_red()
-        result = discord.Embed(title = message, color = pay_color,
-                               description = 'The payout for this round is ' + 
-                               str(payout) + 'x your wagers.')
-        result.set_footer(text = 'Thank you for playing!')
-        await ctx.send(embed=result)
-        payWinners(payout, wagers)
-        wagers = {}
+#    roles = [str(role) for role in ctx.author.roles]
+#    if 'Night Shift' in roles:
+    intro = discord.Embed(
+        title = 'Play Some Dabo!',
+        description = 'A game of Dabo is about to begin...',
+        color = discord.Color.blue())
+    intro.add_field(
+        name = 'How to Play', value = 'Use the command \"$wager ' +
+        '<integer>\" to bid <integer> ' + latinum +
+        ' gold pressed latinum on the next spin!', inline = False)
+    intro.add_field(
+        name = 'Rules of the Game', value = 'Your wager must be ' +
+        'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
+        ' ' +latinum + ' to enter the game.\n' + 
+        'Everyone wins or loses together, so ask the Blessed ' +
+        'Exchequer for good luck!', inline = False)
+    intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
+                     ' seconds.')
+    dabo = True
+    await ctx.send(embed=intro)
+    await asyncio.sleep(dabo_duration)
+    closed = discord.Embed(
+        description = 'Betting is now closed! Play again next time!',
+        color = discord.Color.red())
+    dabo = False
+    await ctx.send(embed=closed)
+    collectWagers(wagers)
+    result = spinWheel()
+    delay = discord.Embed(
+        description = 'Collecting wagers and spinning the wheel!',
+        color = discord.Color.dark_gray())
+    await ctx.send(embed=delay)
+    message, payout = determineWinnings(result)
+    await asyncio.sleep(random.randint(4,6))
+    wheel1, wheel2, wheel3 = resultImages(result)
+    await ctx.send(file = discord.File(wheel1))
+    await asyncio.sleep(random.randint(2,4))
+    await ctx.send(file = discord.File(wheel2))
+    await asyncio.sleep(random.randint(5,7))
+    await ctx.send(file = discord.File(wheel3))
+    await asyncio.sleep(1)
+    if payout > 1:
+        pay_color = discord.Color.gold()
+    elif payout > 0:
+        pay_color = discord.Color.light_grey()
+    else:
+        pay_color = discord.Color.dark_red()
+    result = discord.Embed(title = message, color = pay_color,
+                           description = 'The payout for this round is ' + 
+                           str(payout) + 'x your wagers.')
+    result.set_footer(text = 'Thank you for playing!')
+    await ctx.send(embed=result)
+    payWinners(payout, wagers)
+    wagers = {}
 
 @bot.command(name='wager')
 async def wager(ctx, wager: int):
