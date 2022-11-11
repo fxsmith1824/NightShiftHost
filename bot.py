@@ -377,16 +377,20 @@ def disburseItem(buyer_id, item):
 async def check_balance(ctx, member: discord.Member = None):
     if member:
         user_id = member.id
+        if member.nick:
+            user = member.nick
+        else:
+            user = str(member)
     else:
         user_id = ctx.author.id
+        if ctx.author.nick:
+            user = ctx.author.nick
+        else:
+            user = str(ctx.author)
     make_treasury_account(user_id)
     balance = treasury[user_id]
-    if ctx.author.nick:
-        user = ctx.author.nick
-    else:
-        user = str(ctx.author)
-    message = (user + ', your current balance is: ' + str(balance) + 
-               ' ' + latinum + '.')
+    message = (user + '\'s current balance is: ' + str(balance) + ' ' + 
+               latinum + '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
     await ctx.send(embed=response)
 
