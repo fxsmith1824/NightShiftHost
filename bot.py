@@ -445,6 +445,35 @@ async def buy_item(ctx, item):
                            ' to make this purchase.')            
         message = discord.Embed(description = buy_message, color = buy_color)
         await ctx.send(embed=message)
+    
+@bot.command(name='stipend')
+@commands.cooldown(1, 60*60*24, type = commands.BucketType.member)
+async def stipend(ctx):
+    if ctx.author.nick:
+        user = ctx.author.nick
+    else:
+        user = str(ctx.author)
+    user_id = ctx.author.id
+    roles = [str(role) for role in ctx.author.roles]
+    if user_id not in treasury.keys():
+        treasury[user_id] = 0
+    base_payout = 100
+    if 'Commander' in roles:
+        payout = base_payout + 25
+    elif 'Lt. Commander' in roles:
+        payout = base_payout + 15
+    elif 'Lieutenant' in roles:
+        payout = base_payout + 5
+    elif 'Ensign' in roles:
+        payout = base_payout
+    else:
+        payout = base_payout - 75
+    treasury[user_id] += payout
+    text = (user + ' has been granted ' + str(payout) + ' ' + latinum + 
+               ' for their daily stipend.')
+    message = discord.Embed(description = text, color = discord.Color.dark_gold())
+    await ctx.send(embed=message)
+    
 
 #%% RUN BOT, RUN
 treasury, shop_inventory, self_inventory = load_data()
