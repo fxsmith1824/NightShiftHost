@@ -473,7 +473,23 @@ async def stipend(ctx):
                ' for their daily stipend.')
     message = discord.Embed(description = text, color = discord.Color.dark_gold())
     await ctx.send(embed=message)
-    
+
+@stipend.error
+async def stipend_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        if error.retry_after > 3600:
+            retry_time = round(error.retry_after/3600, 1)
+            retry_unit = 'hours'
+        elif error.retry_after > 60:
+            retry_time = int(error.retry_after/60)
+            retry_unit = 'minutes'
+        else:
+            retry_time = int(error.retry_after)
+            retry_unit = 'seconds'
+        text = ('You cannot collect another stipend yet. Try again in ' 
+                + str(retry_time) + ' ' + retry_unit + '.')
+        message = discord.Embed(description = text, color = discord.Color.light_grey())
+        await ctx.send(embed=message)
 
 #%% RUN BOT, RUN
 treasury, shop_inventory, self_inventory = load_data()
