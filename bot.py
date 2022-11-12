@@ -48,7 +48,7 @@ token = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix='$', intents=intents)
 admin_role = 'Night Shift'
-night_shift = 1009332010348716032
+night_shift = bot.get_guild(1009332010348716032)
 
 dabo = False
 wagers = {}
