@@ -65,8 +65,14 @@ async def on_ready():
         activity=discord.Activity(type=discord.ActivityType.listening,
                                   name='Faith of the Heart'))
     print(f'{bot.user.name} has connected to Discord!')
-    synced = await bot.tree.sync()
-    print(str(len(synced)) + ' commands were synced.')
+    #synced = await bot.tree.sync()
+    #print(str(len(synced)) + ' commands were synced.')
+
+@bot.command(name='sync')
+@commands.dm_only()
+async def sync_commands(ctx):
+    await bot.tree.sync()
+    await ctx.send(content = 'Commands have been synced.')
 
 def load_data():
     try:
@@ -268,6 +274,66 @@ def resultImages(result):
         wheel3_file = os.path.join(image_folder, wheel3 + '.webp')
     return wheel1_file, wheel2_file, wheel3_file
 
+@bot.tree.command(name='dabo', description = 'Start a game of dabo for the ' +
+                  'whole server to bet on!')
+@app_commands.checks.has_any_role('Night Shift', 'Commander')
+@commands.guild_only()
+async def dabo(interaction: discord.Interaction):
+    global dabo
+    global wagers
+    intro = discord.Embed(
+        title = 'Play Some Dabo!',
+        description = 'A game of Dabo is about to begin...',
+        color = discord.Color.blue())
+    intro.add_field(
+        name = 'How to Play', value = 'Use the command \"$wager ' +
+        '<integer>\" to bid <integer> ' + latinum +
+        ' gold pressed latinum on the next spin!', inline = False)
+    intro.add_field(
+        name = 'Rules of the Game', value = 'Your wager must be ' +
+        'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
+        ' ' +latinum + ' to enter the game.\n' + 
+        'Everyone wins or loses together, so ask the Blessed ' +
+        'Exchequer for good luck!', inline = False)
+    intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
+                     ' seconds.')
+    dabo = True
+    await interaction.response.send_message(embed=intro)
+    await asyncio.sleep(dabo_duration)
+    closed = discord.Embed(
+        description = 'Betting is now closed! Play again next time!',
+        color = discord.Color.red())
+    dabo = False
+    await interaction.response.send_message(embed=closed)
+    collectWagers(wagers)
+    result = spinWheel()
+    delay = discord.Embed(
+        description = 'Collecting wagers and spinning the wheel!',
+        color = discord.Color.dark_gray())
+    await interaction.response.send_message(embed=delay)
+    message, payout = determineWinnings(result)
+    await asyncio.sleep(random.randint(4,6))
+    wheel1, wheel2, wheel3 = resultImages(result)
+    await interaction.response.send_message(file = discord.File(wheel1))
+    await asyncio.sleep(random.randint(2,4))
+    await interaction.response.send_message(file = discord.File(wheel2))
+    await asyncio.sleep(random.randint(5,7))
+    await interaction.response.send_message(file = discord.File(wheel3))
+    await asyncio.sleep(1)
+    if payout > 1:
+        pay_color = discord.Color.gold()
+    elif payout > 0:
+        pay_color = discord.Color.light_grey()
+    else:
+        pay_color = discord.Color.dark_red()
+    result = discord.Embed(title = message, color = pay_color,
+                           description = 'The payout for this round is ' + 
+                           str(payout) + 'x your wagers.')
+    result.set_footer(text = 'Thank you for playing!')
+    await interaction.response.send_message(embed=result)
+    payWinners(payout, wagers)
+    wagers = {}
+'''
 @bot.command(name='dabo')
 @commands.has_any_role('Night Shift', 'Commander')
 @commands.guild_only()
@@ -326,7 +392,7 @@ async def dabo(ctx):
     await ctx.send(embed=result)
     payWinners(payout, wagers)
     wagers = {}
-
+'''
 @bot.command(name='wager')
 @commands.guild_only()
 async def wager(ctx, wager: int):
