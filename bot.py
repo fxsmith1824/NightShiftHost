@@ -34,7 +34,7 @@ nest_asyncio.apply()
 
 import os
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands, app_commands, tasks
 from dotenv import load_dotenv
 import asyncio
 import random
@@ -57,6 +57,16 @@ self_inventory = {}
 latinum = '<:mee6Coins:1017715720961925150>'
 starting_balance = 500
 
+@bot.event
+async def on_ready():
+    save_data.start()
+    await bot.change_presence(
+        activity=discord.Activity(type=discord.ActivityType.listening,
+                                  name='Faith of the Heart'))
+    print(f'{bot.user.name} has connected to Discord!')
+    synced = await bot.tree.sync()
+    print(str(len(synced)) + ' commands were synced.')
+
 def load_data():
     try:
         with open('data.pickle', 'rb') as file:
@@ -73,13 +83,11 @@ def load_data():
         print('Data failed to load - loading default test data.')
     return treasury, shop_inventory, self_inventory
 
-@bot.event
-async def on_ready():
-    save_data.start()
-    await bot.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.listening,
-                                  name='Faith of the Heart'))
-    print(f'{bot.user.name} has connected to Discord!')
+def try_nick(user):
+    if user.nick:
+        return user.nick
+    else:
+        return user.name
 
 @tasks.loop(minutes=10)
 async def save_data():
