@@ -376,7 +376,7 @@ def disburseItem(buyer_id, item):
     make_item_inventory(buyer_id)
     self_inventory[buyer_id].append(item)
 
-@bot.tree.command(name='balance', description='Check your (or another users\'s ' +
+@bot.tree.command(name='balance', description='Check your (or another users\'s) ' +
                   'current latinum balance.')
 async def check_balance(interaction: discord.Interaction, member: discord.Member = None):
     if member:
