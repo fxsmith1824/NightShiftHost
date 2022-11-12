@@ -281,6 +281,7 @@ def resultImages(result):
 async def dabo(interaction: discord.Interaction):
     global dabo
     global wagers
+    channel = interaction.channel()
     intro = discord.Embed(
         title = 'Play Some Dabo!',
         description = 'A game of Dabo is about to begin...',
@@ -304,21 +305,21 @@ async def dabo(interaction: discord.Interaction):
         description = 'Betting is now closed! Play again next time!',
         color = discord.Color.red())
     dabo = False
-    await interaction.response.send_message(embed=closed)
+    await channel.send(embed=closed)
     collectWagers(wagers)
     result = spinWheel()
     delay = discord.Embed(
         description = 'Collecting wagers and spinning the wheel!',
         color = discord.Color.dark_gray())
-    await interaction.response.send_message(embed=delay)
+    await channel.send(embed=delay)
     message, payout = determineWinnings(result)
     await asyncio.sleep(random.randint(4,6))
     wheel1, wheel2, wheel3 = resultImages(result)
-    await interaction.response.send_message(file = discord.File(wheel1))
+    await channel.send(file = discord.File(wheel1))
     await asyncio.sleep(random.randint(2,4))
-    await interaction.response.send_message(file = discord.File(wheel2))
+    await channel.send(file = discord.File(wheel2))
     await asyncio.sleep(random.randint(5,7))
-    await interaction.response.send_message(file = discord.File(wheel3))
+    await channel.send(file = discord.File(wheel3))
     await asyncio.sleep(1)
     if payout > 1:
         pay_color = discord.Color.gold()
@@ -330,7 +331,7 @@ async def dabo(interaction: discord.Interaction):
                            description = 'The payout for this round is ' + 
                            str(payout) + 'x your wagers.')
     result.set_footer(text = 'Thank you for playing!')
-    await interaction.response.send_message(embed=result)
+    await channel.send(embed=result)
     payWinners(payout, wagers)
     wagers = {}
 '''
