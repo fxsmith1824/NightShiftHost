@@ -443,38 +443,31 @@ async def my_inventory(interaction: discord.Interaction):
                                'your ' + latinum + '.')
     await interaction.response.send_message(embed=message, ephemeral=True)
 
-
-
-@bot.command(name='buy')
-@commands.guild_only()
-async def buy_item(ctx, item):
+@bot.tree.command(name='buy', description='Purchase an item from the shop ' + 
+                  '(/shop-inventory).')
+@app_commands.guild_only()
+async def buy_item(interaction: discord.Interaction, item: str):
     if item in shop_inventory:
-        if ctx.author.nick:
-            buyer = ctx.author.nick
-        else:
-            buyer = str(ctx.author)
-        buyer_id = ctx.author.id
+        buyer = try_nick(interaction.user)
+        buyer_id = interaction.user.id
         buy_color = discord.Color.light_grey()
         make_treasury_account(buyer_id)
         if collectPayment(buyer_id, item):
             buy_message = buyer + ' has purchased ' + item + '.'
             disburseItem(buyer_id, item)
         else:
-            buy_message = ('Sorry, ' + buyer + ', you do not have enough ' + latinum +
-                           ' to make this purchase.')            
+            buy_message = ('Sorry, ' + buyer + ', you do not have enough ' 
+                           + latinum + ' to make this purchase.')  
         message = discord.Embed(description = buy_message, color = buy_color)
-        await ctx.send(embed=message)
-    
-@bot.command(name='stipend')
-@commands.cooldown(1, 60*60*24, type = commands.BucketType.member)
-@commands.guild_only()
-async def stipend(ctx):
-    if ctx.author.nick:
-        user = ctx.author.nick
-    else:
-        user = str(ctx.author)
-    user_id = ctx.author.id
-    roles = [str(role) for role in ctx.author.roles]
+        await interaction.response.send_message(embed=message)
+
+@bot.tree.command(name='stipend', description='Collect your daily stipend.')
+@app_commands.checks.cooldown(1, 60*60*24)
+@app_commands.guild_only()
+async def stipend(interaction: discord.Interaction):
+    user = try_nick(interaction.user)
+    user_id = interaction.user.id
+    roles = [str(role) for role in interaction.user.roles]
     make_treasury_account(user_id)
     base_payout = 100
     if 'Commander' in roles:
@@ -495,8 +488,8 @@ async def stipend(ctx):
     text = ('For reaching the rank of ' + rank + ', ' + user + ' has been granted ' 
             + str(payout) + ' ' + latinum + ' for their daily stipend.')
     message = discord.Embed(description = text, color = discord.Color.dark_gold())
-    await ctx.send(embed=message)
-
+    await interaction.response.send_message(embed=message)
+    
 @stipend.error
 async def stipend_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
