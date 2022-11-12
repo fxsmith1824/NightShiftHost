@@ -2,19 +2,9 @@
 """
 Created on Wed Sep 14 17:10:51 2022
 
-TODO: I think Dabo is done - pending feedback from Night Shift.
-
-- MOVE TO SLASH COMMANDS - SO EASY
-
+TODO: 
 - Ask Night Shift about item expiration dates, maybe?
 - Consider making $my-inventory and $balance DM replies?
-
-- Maybe replace all the nickname / member name checks with a simple function
-def try_nick(user):
-    if user.nick:
-        return user.nick
-    else:
-        return user.name
 
 Should make sure only channel accepted for commands is #dabo-tables
 1019777894941212763
@@ -23,6 +13,8 @@ async def is_channel(ctx):
     return ctx.channel.id == 1019777894941212763
 
 @commands.check(is_channel)
+
+- Remember Dabo table open time is currently 10 seconds
 
 @author: AzureRogue
 """
