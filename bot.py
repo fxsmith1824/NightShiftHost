@@ -40,7 +40,6 @@ token = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='$', intents=intents)
-tree = discord.app_commands.CommandTree(bot)
 admin_role = 'Night Shift'
 
 dabo = False
@@ -484,8 +483,8 @@ async def stipend(interaction: discord.Interaction):
     message = discord.Embed(description = text, color = discord.Color.dark_gold())
     await interaction.response.send_message(embed=message)
     
-@tree.error
-async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError) -> None:
+@stipend.error
+async def stipend_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
     if isinstance(error, app_commands.errors.CommandOnCooldown):
         if error.retry_after > 3600:
             retry_time = round(error.retry_after/3600, 1)
