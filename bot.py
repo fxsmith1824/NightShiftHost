@@ -408,7 +408,7 @@ async def check_balance(interaction: discord.Interaction, member: discord.Member
 async def inventory(interaction: discord.Interaction):
     message = discord.Embed(title = 'Shop Inventory',
                               description = 'Check out the amazing offerings below, ' +
-                              'then use the command $buy "Item Name" to ' +
+                              'then use the command /buy to ' +
                               'purchase as many items as you can afford.\n' +
                               '----------',
                               color = discord.Color.blue())
@@ -439,7 +439,7 @@ async def my_inventory(interaction: discord.Interaction):
     else:
         message = discord.Embed(title = user + '\'s Inventory',
                                description = 'You do not have any items yet. ' +
-                               'Use the command $buy "Item Name" to start spending ' +
+                               'Use the command /buy to start spending ' +
                                'your ' + latinum + '.')
     await interaction.response.send_message(embed=message, ephemeral=True)
 
