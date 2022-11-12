@@ -99,6 +99,19 @@ async def save_data():
 
 #%% Administrator Functions
 
+@bot.tree.command(name='modify-latinum', description='Change the amount of ' +
+                  'latinum a user has.', guild_only=True)
+@app_commands.checks.has_role(admin_role)
+async def modify_latinum(interaction: discord.Interaction, member: discord.Member, amount: int):
+    author = try_nick(interaction.user)
+    member = try_nick(member)
+    make_treasury_account(member.id)
+    treasury[member.id] += amount
+    message = discord.Embed(description = author + ' has give ' + member + ' ' + 
+                            str(amount) + ' ' + latinum, 
+                            color = discord.Color.dark_gold())
+    await interaction.response.send_message(embed=message)
+'''
 @bot.command(name='modify-latinum')
 @commands.has_role(admin_role)
 @commands.guild_only()
@@ -118,7 +131,7 @@ async def modify_latinum(ctx, member: discord.Member, amount: int):
                             ' ' + str(amount) + ' ' + latinum,
                             color = discord.Color.dark_gold())
     await ctx.send(embed=message)
-
+'''
 @bot.command(name='remove-item')
 @commands.has_role(admin_role)
 @commands.guild_only()
