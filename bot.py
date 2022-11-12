@@ -277,7 +277,7 @@ def resultImages(result):
 @bot.tree.command(name='dabo', description = 'Start a game of dabo for the ' +
                   'whole server to bet on!')
 @app_commands.checks.has_any_role('Night Shift', 'Commander')
-@commands.guild_only()
+@app_commands.guild_only()
 async def dabo(interaction: discord.Interaction):
     global dabo
     global wagers
@@ -334,84 +334,23 @@ async def dabo(interaction: discord.Interaction):
     await channel.send(embed=result)
     payWinners(payout, wagers)
     wagers = {}
-'''
-@bot.command(name='dabo')
-@commands.has_any_role('Night Shift', 'Commander')
-@commands.guild_only()
-async def dabo(ctx):
-    global dabo
-    global wagers
-    intro = discord.Embed(
-        title = 'Play Some Dabo!',
-        description = 'A game of Dabo is about to begin...',
-        color = discord.Color.blue())
-    intro.add_field(
-        name = 'How to Play', value = 'Use the command \"$wager ' +
-        '<integer>\" to bid <integer> ' + latinum +
-        ' gold pressed latinum on the next spin!', inline = False)
-    intro.add_field(
-        name = 'Rules of the Game', value = 'Your wager must be ' +
-        'at least ' + str(dabo_min) + ' and at most ' + str(dabo_max) +
-        ' ' +latinum + ' to enter the game.\n' + 
-        'Everyone wins or loses together, so ask the Blessed ' +
-        'Exchequer for good luck!', inline = False)
-    intro.set_footer(text = 'The tables will close in ' + str(dabo_duration) +
-                     ' seconds.')
-    dabo = True
-    await ctx.send(embed=intro)
-    await asyncio.sleep(dabo_duration)
-    closed = discord.Embed(
-        description = 'Betting is now closed! Play again next time!',
-        color = discord.Color.red())
-    dabo = False
-    await ctx.send(embed=closed)
-    collectWagers(wagers)
-    result = spinWheel()
-    delay = discord.Embed(
-        description = 'Collecting wagers and spinning the wheel!',
-        color = discord.Color.dark_gray())
-    await ctx.send(embed=delay)
-    message, payout = determineWinnings(result)
-    await asyncio.sleep(random.randint(4,6))
-    wheel1, wheel2, wheel3 = resultImages(result)
-    await ctx.send(file = discord.File(wheel1))
-    await asyncio.sleep(random.randint(2,4))
-    await ctx.send(file = discord.File(wheel2))
-    await asyncio.sleep(random.randint(5,7))
-    await ctx.send(file = discord.File(wheel3))
-    await asyncio.sleep(1)
-    if payout > 1:
-        pay_color = discord.Color.gold()
-    elif payout > 0:
-        pay_color = discord.Color.light_grey()
-    else:
-        pay_color = discord.Color.dark_red()
-    result = discord.Embed(title = message, color = pay_color,
-                           description = 'The payout for this round is ' + 
-                           str(payout) + 'x your wagers.')
-    result.set_footer(text = 'Thank you for playing!')
-    await ctx.send(embed=result)
-    payWinners(payout, wagers)
-    wagers = {}
-'''
-@bot.command(name='wager')
-@commands.guild_only()
-async def wager(ctx, wager: int):
+
+@bot.tree.command(name='wager', description='Place a bet on the ongoing game ' +
+                  'of Dabo.')
+@app_commands.guild_only()
+async def wager(interaction: discord.Interaction, wager: int):
     global wagers
     if dabo == True:
-        if ctx.author.nick:
-            user = ctx.author.nick
-        else:
-            user = str(ctx.author)
+        author_name = try_nick(interaction.user)
         if dabo_min <= wager <= dabo_max:
-            if verifyWager(ctx.author.id, wager):
-                wagers[ctx.author.id] = wager
-                message = (user + ', you wagered ' + str(wager) + 
-                           ' ' + latinum + ' latinum. Good luck!')
+            if verifyWager(interaction.user.id, wager):
+                wagers[interaction.user.id] = wager
+                message = (author_name + ', you wagered ' + str(wager) + ' ' +
+                           latinum + ' latinum. Good luck!')
                 result_color = discord.Color.blue()
             else:
-                message = ('Sorry, ' + user + 
-                           ', you do not have enough latinum to make that wager...')
+                message = ('Sorry, ' + author_name + ', you do not have enough ' +
+                           'latinum to make that wager...')
                 result_color = discord.Color.red()
         else:
             message = ('Your bet has not been place. Bets must be at least ' 
@@ -420,9 +359,9 @@ async def wager(ctx, wager: int):
             result_color = discord.Color.red()
     else:
         message = 'Sorry, the tables are closed at the moment.'
-        result_color = discord.Color.light_gray()
+        result_color = discord.Color.light_grey()
     wager_result = discord.Embed(description = message, color = result_color)
-    await ctx.send(embed=wager_result)
+    await interaction.response.send_message(embed=wager_result)
 
 #%% Latinum and Item Management
 
@@ -445,26 +384,23 @@ def disburseItem(buyer_id, item):
     make_item_inventory(buyer_id)
     self_inventory[buyer_id].append(item)
 
-@bot.command(name='balance')
-async def check_balance(ctx, member: discord.Member = None):
+@bot.tree.command(name='balance', description='Check your (or another users\'s ' +
+                  'current latinum balance.')
+async def check_balance(interaction: discord.Interaction, member: discord.Member = None):
     if member:
         user_id = member.id
-        if member.nick:
-            user = member.nick
-        else:
-            user = str(member)
+        user = try_nick(member)
     else:
-        user_id = ctx.author.id
-        if ctx.author.nick:
-            user = ctx.author.nick
-        else:
-            user = str(ctx.author)
+        user_id = interaction.user.id
+        user = try_nick(interaction.user)
     make_treasury_account(user_id)
     balance = treasury[user_id]
     message = (user + '\'s current balance is: ' + str(balance) + ' ' + 
                latinum + '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
-    await ctx.send(embed=response)
+    await interaction.response.send_message(embed=response)
+
+
 
 @bot.command(name='shop-inventory')
 @commands.guild_only()
