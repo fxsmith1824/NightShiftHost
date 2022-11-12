@@ -108,7 +108,7 @@ async def modify_latinum(interaction: discord.Interaction, member: discord.Membe
     member_name = try_nick(member)
     make_treasury_account(member.id)
     treasury[member.id] += amount
-    message = discord.Embed(description = author_name + ' has give ' + member_name + 
+    message = discord.Embed(description = author_name + ' has given ' + member_name + 
                             ' ' + str(amount) + ' ' + latinum, 
                             color = discord.Color.dark_gold())
     await interaction.response.send_message(embed=message)
