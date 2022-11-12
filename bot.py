@@ -390,21 +390,22 @@ async def check_balance(interaction: discord.Interaction, member: discord.Member
     if member:
         user_id = member.id
         user = try_nick(member)
+        private = False
     else:
         user_id = interaction.user.id
         user = try_nick(interaction.user)
+        private = True
     make_treasury_account(user_id)
     balance = treasury[user_id]
     message = (user + '\'s current balance is: ' + str(balance) + ' ' + 
                latinum + '.')
     response = discord.Embed(description = message, color = discord.Color.dark_gold())
-    await interaction.response.send_message(embed=response)
+    await interaction.response.send_message(embed=response, ephemeral=private)
 
-
-
-@bot.command(name='shop-inventory')
-@commands.guild_only()
-async def inventory(ctx):
+@bot.tree.command(name='shop-inventory', description='Check what items are currently ' +
+                  'available for purchase.')
+@app_commands.guild_only()
+async def inventory(interaction: discord.Interaction):
     message = discord.Embed(title = 'Shop Inventory',
                               description = 'Check out the amazing offerings below, ' +
                               'then use the command $buy "Item Name" to ' +
@@ -416,33 +417,33 @@ async def inventory(ctx):
         item_description = shop_inventory[item]['description']
         message.add_field(name=item_name, value=item_description, inline=False)
     message.set_footer(text = 'Remember: all sales are final!')
-    await ctx.send(embed=message)
+    await interaction.response.send_message(embed=message)
 
-@bot.command(name='my-inventory')
-async def my_inventory(ctx):
+@bot.tree.command(name='my-inventory', description='See what items are in your ' +
+                  'inventory.')
+async def my_inventory(interaction: discord.Interaction):
     global self_inventory
-    if ctx.author.nick:
-        buyer = ctx.author.nick
-    else:
-        buyer = str(ctx.author)
-    buyer_id = ctx.author.id
+    user = try_nick(interaction.user)
+    user_id = interaction.user.id
     buy_color = discord.Color.light_grey()
-    make_item_inventory(buyer_id)
-    if len(self_inventory[buyer_id]) > 0:
-        message = discord.Embed(title = buyer + '\'s Inventory',
+    make_item_inventory(user_id)
+    if len(self_inventory[user_id]) > 0:
+        message = discord.Embed(title = user + '\'s Inventory',
                                 description = 'Here are your currently owned items. ' +
                                 'Use some command Azure has not created yet to use your '+ 
                                 'items.', color = buy_color)
-        for item in self_inventory[buyer_id]:
+        for item in self_inventory[user_id]:
             item_name = item
             item_description = shop_inventory[item]['description']
             message.add_field(name=item_name, value=item_description, inline=False)
     else:
-        message = discord.Embed(title = buyer + '\'s Inventory',
+        message = discord.Embed(title = user + '\'s Inventory',
                                description = 'You do not have any items yet. ' +
                                'Use the command $buy "Item Name" to start spending ' +
                                'your ' + latinum + '.')
-    await ctx.send(embed=message)
+    await interaction.response.send_message(embed=message, ephemeral=True)
+
+
 
 @bot.command(name='buy')
 @commands.guild_only()
