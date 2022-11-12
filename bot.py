@@ -15,6 +15,7 @@ async def is_channel(ctx):
 @commands.check(is_channel)
 
 - Remember Dabo table open time is currently 10 seconds
+- Check if all imports are still required
 
 @author: AzureRogue
 """
