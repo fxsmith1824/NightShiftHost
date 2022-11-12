@@ -34,7 +34,8 @@ nest_asyncio.apply()
 
 import os
 import discord
-from discord.ext import commands, app_commands, tasks
+from discord.ext import commands, tasks
+from discord import app_commands
 from dotenv import load_dotenv
 import asyncio
 import random
@@ -100,38 +101,37 @@ async def save_data():
 #%% Administrator Functions
 
 @bot.tree.command(name='modify-latinum', description='Change the amount of ' +
-                  'latinum a user has.', guild_only=True)
+                  'latinum a user has.')
 @app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
 async def modify_latinum(interaction: discord.Interaction, member: discord.Member, amount: int):
-    author = try_nick(interaction.user)
-    member = try_nick(member)
+    author_name = try_nick(interaction.user)
+    member_name = try_nick(member)
     make_treasury_account(member.id)
     treasury[member.id] += amount
-    message = discord.Embed(description = author + ' has give ' + member + ' ' + 
-                            str(amount) + ' ' + latinum, 
+    message = discord.Embed(description = author_name + ' has give ' + member_name + 
+                            ' ' + str(amount) + ' ' + latinum, 
                             color = discord.Color.dark_gold())
     await interaction.response.send_message(embed=message)
-'''
-@bot.command(name='modify-latinum')
-@commands.has_role(admin_role)
-@commands.guild_only()
-async def modify_latinum(ctx, member: discord.Member, amount: int):
-    if ctx.author.nick:
-        author = ctx.author.nick
-    else:
-        author = str(ctx.author)
-    member_id = member.id
-    if member.nick:
-        member_nick = member.nick
-    else:
-        member_nick = str(member)
-    make_treasury_account(member_id)
-    treasury[member_id] += amount
-    message = discord.Embed(description = author + ' has given ' + member_nick +
-                            ' ' + str(amount) + ' ' + latinum,
-                            color = discord.Color.dark_gold())
-    await ctx.send(embed=message)
-'''
+
+@bot.tree.command(name='remove-item', description='Remove an item from a user\'s ' +
+                  'inventory.')
+@app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
+async def remove_item(interaction: discord.Interaction, member: discord.Member, item):
+    author_name = try_nick(interaction.user)
+    member_name = try_nick(member)
+    try:
+        self_inventory[member.id].remove(item)
+        message = discord.Embed(description = author_name + ' has removed ' + 
+                                item + ' from ' + member_name + '.',
+                                color = discord.Color.light_grey())
+    except:
+        message = discord.Embed(description = 'Could not remove ' + item + 
+                                ' from ' + member_name + '.',
+                                color = discord.Color.light_grey())
+    await interaction.response.send_message(embed=message)
+
 @bot.command(name='remove-item')
 @commands.has_role(admin_role)
 @commands.guild_only()
