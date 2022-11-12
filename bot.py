@@ -281,7 +281,7 @@ def resultImages(result):
 async def dabo(interaction: discord.Interaction):
     global dabo
     global wagers
-    channel = interaction.channel()
+    channel = interaction.channel
     intro = discord.Embed(
         title = 'Play Some Dabo!',
         description = 'A game of Dabo is about to begin...',
