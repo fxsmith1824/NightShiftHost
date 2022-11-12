@@ -3,6 +3,9 @@
 Created on Wed Sep 14 17:10:51 2022
 
 TODO: I think Dabo is done - pending feedback from Night Shift.
+
+- MOVE TO SLASH COMMANDS - SO EASY
+
 - Ask Night Shift about item expiration dates, maybe?
 - Consider making $my-inventory and $balance DM replies?
 
