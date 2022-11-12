@@ -131,48 +131,24 @@ async def remove_item(interaction: discord.Interaction, member: discord.Member, 
                                 ' from ' + member_name + '.',
                                 color = discord.Color.light_grey())
     await interaction.response.send_message(embed=message)
-'''
-@bot.command(name='remove-item')
-@commands.has_role(admin_role)
-@commands.guild_only()
-async def remove_item(ctx, member: discord.Member, item):
-    if ctx.author.nick:
-        author = ctx.author.nick
-    else:
-        author = str(ctx.author)
-    try:
-        self_inventory[member.id].remove(item)
-        message = discord.Embed(description = author + ' has removed ' + item + 
-                                ' from ' + member.nick + '.',
-                                color = discord.Color.light_grey())
-    except:
-        message = discord.Embed(description = 'Could not remove ' + item + 
-                                ' from ' + member.nick + '.',
-                                color = discord.Color.light_grey())
-    await ctx.send(embed=message)
-'''
-@bot.command(name='clear-inventory')
-@commands.has_role(admin_role)
-@commands.guild_only()
-async def clear_inventory(ctx, member: discord.Member):
-    if ctx.author.nick:
-        author = ctx.author.nick
-    else:
-        author = str(ctx.author)
-    if member.nick:
-        member_name = member.nick
-    else:
-        member_name = str(member)
-    self_inventory[member.id] = []
-    message = discord.Embed(description = author + ' has cleared ' + member_name +
-                            '\'s inventory.',
-                            color = discord.Color.light_grey())
-    await ctx.send(embed=message)
 
-@bot.command(name='save-data')
-@commands.has_role(admin_role)
-@commands.guild_only()
-async def on_demand_save(ctx):
+@bot.tree.command(name='clear-inventory', description='Remove all items from a ' +
+                  'user\'s inventory.')
+@app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
+async def clear_inventory(interaction: discord.Interaction, member: discord.Member):
+    author_name = try_nick(interaction.user)
+    member_name = try_nick(member)
+    self_inventory[member.id] = []
+    message = discord.Embed(description = author_name + ' has cleared ' + member_name +
+                            '\'s inventory.', color = discord.Color.light_grey())
+    await interaction.response.send_message(embed=message)
+
+@bot.tree.command(name='save-data', description='Backup latinum balances and ' +
+                  'personal inventories to bot host PC.')
+@app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
+async def on_demand_save(interaction: discord.Interaction):
     await save_data()
 
 #%% Dabo
