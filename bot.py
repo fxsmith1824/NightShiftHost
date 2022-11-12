@@ -474,18 +474,22 @@ async def stipend(ctx):
     make_treasury_account(user_id)
     base_payout = 100
     if 'Commander' in roles:
+        rank = 'Commander'
         payout = base_payout + 25
     elif 'Lt. Commander' in roles:
+        rank = 'Lt. Commander'
         payout = base_payout + 15
     elif 'Lieutenant' in roles:
+        rank = 'Lieutenant'
         payout = base_payout + 5
     elif 'Ensign' in roles:
+        rank = 'Ensign'
         payout = base_payout
     else:
         payout = base_payout - 75
     treasury[user_id] += payout
-    text = (user + ' has been granted ' + str(payout) + ' ' + latinum + 
-               ' for their daily stipend.')
+    text = ('For reaching the rank of ' + rank + ', ' + user + ' has been granted ' 
+            + str(payout) + ' ' + latinum + ' for their daily stipend.')
     message = discord.Embed(description = text, color = discord.Color.dark_gold())
     await ctx.send(embed=message)
 
