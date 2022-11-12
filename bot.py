@@ -71,8 +71,8 @@ async def on_ready():
 @bot.command(name='sync')
 @commands.dm_only()
 async def sync_commands(ctx):
-    await bot.tree.sync()
-    await ctx.send(content = 'Commands have been synced.')
+    synced = await bot.tree.sync()
+    await ctx.send(content = str(len(synced)) + ' commands have been synced.')
 
 def load_data():
     try:
