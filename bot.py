@@ -48,6 +48,7 @@ token = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix='$', intents=intents)
 admin_role = 'Night Shift'
+night_shift = 1009332010348716032
 
 dabo = False
 wagers = {}
@@ -101,7 +102,7 @@ async def save_data():
 #%% Administrator Functions
 
 @bot.tree.command(name='modify-latinum', description='Change the amount of ' +
-                  'latinum a user has.')
+                  'latinum a user has.', guild = night_shift)
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def modify_latinum(interaction: discord.Interaction, member: discord.Member, amount: int):
@@ -115,10 +116,10 @@ async def modify_latinum(interaction: discord.Interaction, member: discord.Membe
     await interaction.response.send_message(embed=message)
 
 @bot.tree.command(name='remove-item', description='Remove an item from a user\'s ' +
-                  'inventory.')
+                  'inventory.', guild = night_shift)
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
-async def remove_item(interaction: discord.Interaction, member: discord.Member, item):
+async def remove_item(interaction: discord.Interaction, member: discord.Member, item: str):
     author_name = try_nick(interaction.user)
     member_name = try_nick(member)
     try:
@@ -131,7 +132,7 @@ async def remove_item(interaction: discord.Interaction, member: discord.Member, 
                                 ' from ' + member_name + '.',
                                 color = discord.Color.light_grey())
     await interaction.response.send_message(embed=message)
-
+'''
 @bot.command(name='remove-item')
 @commands.has_role(admin_role)
 @commands.guild_only()
@@ -150,7 +151,7 @@ async def remove_item(ctx, member: discord.Member, item):
                                 ' from ' + member.nick + '.',
                                 color = discord.Color.light_grey())
     await ctx.send(embed=message)
-
+'''
 @bot.command(name='clear-inventory')
 @commands.has_role(admin_role)
 @commands.guild_only()
