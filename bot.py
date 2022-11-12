@@ -45,10 +45,9 @@ import datetime
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='$', intents=intents)
 admin_role = 'Night Shift'
-night_shift = bot.get_guild(1009332010348716032)
 
 dabo = False
 wagers = {}
@@ -102,7 +101,7 @@ async def save_data():
 #%% Administrator Functions
 
 @bot.tree.command(name='modify-latinum', description='Change the amount of ' +
-                  'latinum a user has.', guild = night_shift)
+                  'latinum a user has.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def modify_latinum(interaction: discord.Interaction, member: discord.Member, amount: int):
@@ -116,7 +115,7 @@ async def modify_latinum(interaction: discord.Interaction, member: discord.Membe
     await interaction.response.send_message(embed=message)
 
 @bot.tree.command(name='remove-item', description='Remove an item from a user\'s ' +
-                  'inventory.', guild = night_shift)
+                  'inventory.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def remove_item(interaction: discord.Interaction, member: discord.Member, item: str):
