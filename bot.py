@@ -341,20 +341,23 @@ async def wager(interaction: discord.Interaction, wager: int):
                 message = (author_name + ', you wagered ' + str(wager) + ' ' +
                            latinum + ' latinum. Good luck!')
                 result_color = discord.Color.blue()
+                invis = False
             else:
                 message = ('Sorry, ' + author_name + ', you do not have enough ' +
                            'latinum to make that wager...')
                 result_color = discord.Color.red()
+                invis = True
         else:
             message = ('Your bet has not been place. Bets must be at least ' 
                        + str(dabo_min) + ' and no more than '
                        + str(dabo_max) + '.')
             result_color = discord.Color.red()
+            invis = True
     else:
         message = 'Sorry, the tables are closed at the moment.'
         result_color = discord.Color.light_grey()
     wager_result = discord.Embed(description = message, color = result_color)
-    await interaction.response.send_message(embed=wager_result)
+    await interaction.response.send_message(embed=wager_result, ephemeral=invis)
 
 #%% Latinum and Item Management
 
@@ -498,7 +501,7 @@ async def stipend_error(interaction: discord.Interaction, error: discord.app_com
         text = ('You cannot collect another stipend yet. Try again in ' 
                 + str(retry_time) + ' ' + retry_unit + '.')
         message = discord.Embed(description = text, color = discord.Color.light_grey())
-        await interaction.response.send_message(embed=message)
+        await interaction.response.send_message(embed=message, ephemeral=True)
 
 #%% RUN BOT, RUN
 treasury, shop_inventory, self_inventory = load_data()
