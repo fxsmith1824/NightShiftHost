@@ -3,9 +3,6 @@
 Created on Wed Sep 14 17:10:51 2022
 
 TODO: 
-- Ask Night Shift about item expiration dates, maybe?
-- Consider making $my-inventory and $balance DM replies?
-
 Should make sure only channel accepted for commands is #dabo-tables
 1019777894941212763
 
@@ -16,6 +13,9 @@ async def is_channel(ctx):
 
 - Remember Dabo table open time is currently 10 seconds
 - Check if all imports are still required
+- Until slash commands can be visible only to roles that can use them, I have
+added a ( ) at the beginning of the description of commands that require a 
+particular role/rank to use them.
 
 @author: AzureRogue
 """
@@ -99,8 +99,8 @@ async def save_data():
 
 #%% Administrator Functions
 
-@bot.tree.command(name='modify-latinum', description='Change the amount of ' +
-                  'latinum a user has.')
+@bot.tree.command(name='modify-latinum', description='(Admin-Only) Change the ' +
+                  'amount of latinum a user has.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def modify_latinum(interaction: discord.Interaction, member: discord.Member, amount: int):
@@ -113,8 +113,8 @@ async def modify_latinum(interaction: discord.Interaction, member: discord.Membe
                             color = discord.Color.dark_gold())
     await interaction.response.send_message(embed=message)
 
-@bot.tree.command(name='remove-item', description='Remove an item from a user\'s ' +
-                  'inventory.')
+@bot.tree.command(name='remove-item', description='(Admin-Only) Remove an item ' +
+                  'from a user\'s inventory.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def remove_item(interaction: discord.Interaction, member: discord.Member, item: str):
@@ -131,8 +131,8 @@ async def remove_item(interaction: discord.Interaction, member: discord.Member, 
                                 color = discord.Color.light_grey())
     await interaction.response.send_message(embed=message)
 
-@bot.tree.command(name='clear-inventory', description='Remove all items from a ' +
-                  'user\'s inventory.')
+@bot.tree.command(name='clear-inventory', description='(Admin-Only) Remove all ' +
+                  'items from a user\'s inventory.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def clear_inventory(interaction: discord.Interaction, member: discord.Member):
@@ -143,8 +143,8 @@ async def clear_inventory(interaction: discord.Interaction, member: discord.Memb
                             '\'s inventory.', color = discord.Color.light_grey())
     await interaction.response.send_message(embed=message)
 
-@bot.tree.command(name='save-data', description='Backup latinum balances and ' +
-                  'personal inventories to bot host PC.')
+@bot.tree.command(name='save-data', description='(Admin-Only) Backup latinum ' +
+                  'balances and personal inventories to bot host PC.')
 @app_commands.checks.has_role(admin_role)
 @app_commands.guild_only()
 async def on_demand_save(interaction: discord.Interaction):
@@ -267,8 +267,8 @@ def resultImages(result):
         wheel3_file = os.path.join(image_folder, wheel3 + '.webp')
     return wheel1_file, wheel2_file, wheel3_file
 
-@bot.tree.command(name='dabo', description = 'Start a game of dabo for the ' +
-                  'whole server to bet on!')
+@bot.tree.command(name='dabo', description = '(Commander+) Start a game of dabo ' +
+                  'for the whole server to bet on!')
 @app_commands.checks.has_any_role('Night Shift', 'Commander')
 @app_commands.guild_only()
 async def dabo(interaction: discord.Interaction):
