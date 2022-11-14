@@ -58,6 +58,7 @@ async def on_ready():
         activity=discord.Activity(type=discord.ActivityType.listening,
                                   name='Faith of the Heart'))
     print(f'{bot.user.name} has connected to Discord!')
+    #below is commented out because I'm using $sync to manually sync commands
     #synced = await bot.tree.sync()
     #print(str(len(synced)) + ' commands were synced.')
 
@@ -95,7 +96,6 @@ async def save_data():
     with open('data.pickle', 'wb') as file:
         pickle.dump(data_to_save, file)
     print('Data saved at ' + str(datetime.datetime.now()))
-    print(treasury)
 
 #%% Administrator Functions
 
