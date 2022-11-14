@@ -356,6 +356,7 @@ async def wager(interaction: discord.Interaction, wager: int):
     else:
         message = 'Sorry, the tables are closed at the moment.'
         result_color = discord.Color.light_grey()
+        invis = True
     wager_result = discord.Embed(description = message, color = result_color)
     await interaction.response.send_message(embed=wager_result, ephemeral=invis)
 
