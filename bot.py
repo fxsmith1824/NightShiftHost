@@ -154,7 +154,7 @@ async def on_demand_save(interaction: discord.Interaction):
 
 dabo_min = 10
 dabo_max = 1000
-dabo_duration = 10
+dabo_duration = 90
 
 def spinWheel():
     shapes = ['circle', 'square' ,'triangle']
