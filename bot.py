@@ -270,6 +270,7 @@ def resultImages(result):
 @bot.tree.command(name='dabo', description = '(Commander+) Start a game of dabo ' +
                   'for the whole server to bet on!')
 @app_commands.checks.has_any_role('Night Shift', 'Commander')
+@app_commands.checks.cooldown(1, 120, key = None)
 @app_commands.guild_only()
 async def dabo(interaction: discord.Interaction):
     global dabo
