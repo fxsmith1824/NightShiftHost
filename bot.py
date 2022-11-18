@@ -11,6 +11,8 @@ async def is_channel(ctx):
 
 @commands.check(is_channel)
 
+- guild = discord.Object(id=1009332010348716032)
+
 - Remember Dabo table open time is currently 10 seconds
 - Check if all imports are still required
 - Until slash commands can be visible only to roles that can use them, I have
@@ -90,7 +92,7 @@ def try_nick(user):
     else:
         return user.name
 
-@tasks.loop(minutes=10)
+@tasks.loop(minutes=30)
 async def save_data():
     data_to_save = (treasury, shop_inventory, self_inventory)
     with open('data.pickle', 'wb') as file:
