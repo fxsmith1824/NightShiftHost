@@ -430,8 +430,8 @@ async def my_inventory(interaction: discord.Interaction):
     if len(self_inventory[user_id]) > 0:
         message = discord.Embed(title = user + '\'s Inventory',
                                 description = 'Here are your currently owned items. ' +
-                                'Use some command Azure has not created yet to use your '+ 
-                                'items.', color = buy_color)
+                                'Use /use <item name> to use your items.',
+                                color = buy_color)
         for item in self_inventory[user_id]:
             item_name = item
             item_description = shop_inventory[item]['description']
@@ -460,6 +460,25 @@ async def buy_item(interaction: discord.Interaction, item: str):
                            + latinum + ' to make this purchase.')  
         message = discord.Embed(description = buy_message, color = buy_color)
         await interaction.response.send_message(embed=message)
+
+@bot.tree.command(name='use', description='Use an item in your inventory ' +
+                  '(it will be removed) to gain the effects of that item.')
+@app_commands.guild_only()
+async def use_item(interaction: discord.Interaction, item: str):
+    user_id = interaction.user.id
+    user_name = try_nick(interaction.user)
+    if item in self_inventory[user_id]:
+        self_inventory[user_id].remove(item)
+        # Code for item effect (hopefully separately defined functions)
+        # Probably want a function to look up other function names based on
+        # item name, or something?
+        message = user_name + ' has used ' + item + '.'
+        private = False
+    else:
+        message = 'Sorry, ' + user_name + ' you were unable to use ' + item + '.'
+        private = True
+    response = discord.Embed(description = message, color = discord.Color.light_grey())
+    await interaction.response.send_message(embed=response, ephemeral=private)
 
 @bot.tree.command(name='stipend', description='Collect your daily stipend.')
 @app_commands.checks.cooldown(1, 60*60*24)
