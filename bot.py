@@ -6,6 +6,8 @@ TODO:
 Should make sure only channel accepted for commands is #dabo-tables
 1019777894941212763
 
+🎟️
+
 async def is_channel(ctx):   
     return ctx.channel.id == 1019777894941212763
 
