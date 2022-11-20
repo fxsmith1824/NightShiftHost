@@ -103,6 +103,39 @@ async def save_data():
 
 #%% Administrator Functions
 
+@bot.tree.command(name='modify-store', description='(Admin-Only) Add an item ' +
+                  'to the store\'s inventory.')
+@app_commands.choices(add_or_remove = [app_commands.Choice(name='add', value='add'),
+                                       app_commands.Choice(name='remove', value='remove')])
+@app_commands.describe(item_name='Name of item to add or remove.', 
+                       add_or_remove='Whether you want to add this item to the ' +
+                       'shop inventory or remove an already existing item.',
+                       description = 'Short sentence to describe what the item ' +
+                       'will do - not needed if removing an item.',
+                       price = 'Cost of the item - not needed if removing an ' +
+                       'item.')
+@app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
+async def add_store_item(interaction: discord.Interaction, item_name: str, 
+                         add_or_remove: app_commands.Choice[str], description: str = None, 
+                         price: int = None):
+    if add_or_remove.name == 'add':
+        # Code to add item
+        try:
+            shop_inventory[item_name] = {'price':price, 'description':description}
+            message = ('You have added ' + item_name + ' to the shop. Use ' +
+            '/shop-inventory to check out your new listing.')
+        except:
+            message = 'Failed to add ' + item_name + ' to the shop.'
+    if add_or_remove.name == 'remove':
+        try:
+            del shop_inventory[item_name]
+            message = 'You have removed ' + item_name + ' from the shop.'
+        except:
+            message = 'Failed to remove ' + item_name + ' from the shop.'
+    response = discord.Embed(description = message, color = discord.Color.light_grey())
+    await interaction.response.send_message(embed=response, ephemeral=True)
+
 @bot.tree.command(name='modify-latinum', description='(Admin-Only) Change the ' +
                   'amount of latinum a user has.')
 @app_commands.checks.has_role(admin_role)
