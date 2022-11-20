@@ -3,6 +3,13 @@
 Created on Wed Sep 14 17:10:51 2022
 
 TODO: 
+
+In the long term, I'd like to start moving towards instantiating
+users as a class (so that balances, inventories, etc.) can be
+stored within. Then an overall dictionary of {user id: user class}
+can manage things. I suck at using classes efficiently, so this
+would be a good learning opportunity.
+
 Should make sure only channel accepted for commands is #dabo-tables
 1019777894941212763
 
