@@ -83,7 +83,7 @@ async def sync_commands(ctx):
 def load_data():
     try:
         with open('data.pickle', 'rb') as file:
-            treasury, shop_inventory, self_inventory = pickle.load(file)
+            treasury, shop_inventory, self_inventory, lottery_entrants = pickle.load(file)
         print('Successfully loaded data.')
     except:
         treasury = {295610445824393217: 1000,
@@ -95,7 +95,7 @@ def load_data():
         self_inventory = {}
         lottery_entrants = {}
         print('Data failed to load - loading default test data.')
-    return treasury, shop_inventory, self_inventory
+    return treasury, shop_inventory, self_inventory, lottery_entrants
 
 def try_nick(user):
     if user.nick:
