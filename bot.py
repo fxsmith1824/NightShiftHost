@@ -58,6 +58,7 @@ wagers = {}
 treasury = {}
 shop_inventory = {}
 self_inventory = {}
+lottery_entrants = {}
 
 latinum = '<:mee6Coins:1017715720961925150>'
 starting_balance = 500
@@ -92,6 +93,7 @@ def load_data():
                           'Another Item': {'price': 250,
                                            'description': 'Cheaper item here.'}}
         self_inventory = {}
+        lottery_entrants = {}
         print('Data failed to load - loading default test data.')
     return treasury, shop_inventory, self_inventory
 
@@ -103,7 +105,7 @@ def try_nick(user):
 
 @tasks.loop(minutes=30)
 async def save_data():
-    data_to_save = (treasury, shop_inventory, self_inventory)
+    data_to_save = (treasury, shop_inventory, self_inventory, lottery_entrants)
     with open('data.pickle', 'wb') as file:
         pickle.dump(data_to_save, file)
     print('Data saved at ' + str(datetime.datetime.now()))
@@ -522,6 +524,13 @@ async def use_item(interaction: discord.Interaction, item: str):
     response = discord.Embed(description = message, color = discord.Color.light_grey())
     await interaction.response.send_message(embed=response, ephemeral=private)
 
+def use_mapping(item, user_id, user_name):
+    if item == 'Lissepian Lottery Ticket':
+        enter_lottery(user_id, user_name)
+
+def enter_lottery(user_id, user_name):
+    lottery_entrants[user_id] = user_name
+
 @bot.tree.command(name='stipend', description='Collect your daily stipend.')
 @app_commands.checks.cooldown(1, 60*60*24)
 @app_commands.guild_only()
@@ -570,4 +579,5 @@ async def stipend_error(interaction: discord.Interaction, error: discord.app_com
 
 #%% RUN BOT, RUN
 treasury, shop_inventory, self_inventory = load_data()
+lottery_entrants = {}
 bot.run(token)
