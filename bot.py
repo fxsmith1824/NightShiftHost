@@ -579,5 +579,4 @@ async def stipend_error(interaction: discord.Interaction, error: discord.app_com
 
 #%% RUN BOT, RUN
 treasury, shop_inventory, self_inventory = load_data()
-lottery_entrants = {}
 bot.run(token)
