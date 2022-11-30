@@ -513,9 +513,7 @@ async def use_item(interaction: discord.Interaction, item: str):
     user_name = try_nick(interaction.user)
     if item in self_inventory[user_id]:
         self_inventory[user_id].remove(item)
-        # Code for item effect (hopefully separately defined functions)
-        # Probably want a function to look up other function names based on
-        # item name, or something?
+        use_mapping(item, user_id, user_name)
         message = user_name + ' has used ' + item + '.'
         private = False
     else:
