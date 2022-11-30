@@ -578,5 +578,5 @@ async def stipend_error(interaction: discord.Interaction, error: discord.app_com
         await interaction.response.send_message(embed=message, ephemeral=True)
 
 #%% RUN BOT, RUN
-treasury, shop_inventory, self_inventory = load_data()
+treasury, shop_inventory, self_inventory, lottery_entrants = load_data()
 bot.run(token)
