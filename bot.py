@@ -327,7 +327,7 @@ async def dabo(interaction: discord.Interaction):
         description = 'A game of Dabo is about to begin...',
         color = discord.Color.blue())
     intro.add_field(
-        name = 'How to Play', value = 'Use the command \"$wager ' +
+        name = 'How to Play', value = 'Use the command \"/wager ' +
         '<integer>\" to bid <integer> ' + latinum +
         ' gold pressed latinum on the next spin!', inline = False)
     intro.add_field(
