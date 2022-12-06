@@ -553,7 +553,7 @@ async def stipend(interaction: discord.Interaction):
     else:
         payout = base_payout - 75
     treasury[user_id] += payout
-    text = ('For reaching the rank of ' + rank + ', ' + user + ' has been granted ' 
+    text = ('For reaching their current rank, ' + user + ' has been granted ' 
             + str(payout) + ' ' + latinum + ' for their daily stipend.')
     message = discord.Embed(description = text, color = discord.Color.dark_gold())
     await interaction.response.send_message(embed=message)
