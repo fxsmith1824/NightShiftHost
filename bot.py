@@ -218,7 +218,7 @@ async def reset_lottery(interaction: discord.Interaction, confirm: app_commands.
         message = discord.Embed(description = 'The entrants list for the ' +
                                 'Lissepian Lottery has not been reset. There ' +
                                 'are ' + str(len(lottery_entrants)) + ' entrants currently.')
-    await interaction.response.send_message(embded=message, ephemeral=True)
+    await interaction.response.send_message(embed=message, ephemeral=True)
 
 @bot.tree.command(name='save-data', description='(Admin-Only) Backup latinum ' +
                   'balances and personal inventories to bot host PC.')
