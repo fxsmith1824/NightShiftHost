@@ -189,6 +189,37 @@ async def clear_inventory(interaction: discord.Interaction, member: discord.Memb
                             '\'s inventory.', color = discord.Color.light_grey())
     await interaction.response.send_message(embed=message)
 
+@bot.tree.command(name='draw-lottery', description='(Admin-Only) Draw the winner ' +
+                  'of the Lissepian Lottery')
+@app_commands.checks.has_role(admin_role)
+@app_commands.guild_only()
+async def draw_lottery(interaction: discord.Interaction):
+    if len(lottery_entrants) > 0:
+        options = list(lottery_entrants)
+        winner_id = random.choice(options)
+        winner_name = lottery_entrants[winner_id]
+        message = discord.Embed(description = 'The winner of the current Lissepian ' +
+                                'Lottery is ' + winner_name + '!!!',
+                                color = discord.Color.gold())
+        await interaction.response.send_message(embed=message)
+
+@bot.tree.command(name='reset-lottery', description='(Admin-Only) Clear all current ' +
+                  'entrants in the Lissepian Lottery.')
+@app_commands.choices(confirm = [app_commands.Choice(name='Yes - reset the lottery', value='yes'),
+                                       app_commands.Choice(name='No - do not reset the lottery', value='no')])
+@app_commands.checks.has_role(admin_role)
+async def reset_lottery(interaction: discord.Interaction, confirm: app_commands.Choice[str]):
+    global lottery_entrants
+    if confirm.value == 'yes':
+        lottery_entrants = {}
+        message = discord.Embed(description = 'The entrants list for the ' +
+                                'Lissepian Lottery has been reset.')
+    else:
+        message = discord.Embed(description = 'The entrants list for the ' +
+                                'Lissepian Lottery has not been reset. There ' +
+                                'are ' + str(len(lottery_entrants)) + ' entrants currently.')
+    await interaction.response.send_message(embded=message, ephemeral=True)
+
 @bot.tree.command(name='save-data', description='(Admin-Only) Backup latinum ' +
                   'balances and personal inventories to bot host PC.')
 @app_commands.checks.has_role(admin_role)
