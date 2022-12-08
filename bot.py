@@ -4,6 +4,13 @@ Created on Wed Sep 14 17:10:51 2022
 
 TODO: 
 
+Immediate: Currently the lottery_entrants variable is a dict which means
+if we want to allow people to buy and use multiple tickets to enter we 
+need to change this to handle entries differently. Currently thinking that
+a list with just user ID would be best and then get name from ID. 
+
+Also make the announcement much more dramatic.    
+
 In the long term, I'd like to start moving towards instantiating
 users as a class (so that balances, inventories, etc.) can be
 stored within. Then an overall dictionary of {user id: user class}
@@ -22,7 +29,6 @@ async def is_channel(ctx):
 
 - guild = discord.Object(id=1009332010348716032)
 
-- Remember Dabo table open time is currently 10 seconds
 - Check if all imports are still required
 - Until slash commands can be visible only to roles that can use them, I have
 added a ( ) at the beginning of the description of commands that require a 
